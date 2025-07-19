@@ -10,6 +10,8 @@
     --shadow-medium: rgba(0, 0, 0, 0.08);
     --shadow-strong: rgba(0, 0, 0, 0.12);
     --overlay-bg: rgba(0, 0, 0, 0.7); /* For the detail view background */
+    --skeleton-color-light: #f0f0f0;
+    --skeleton-color-dark: #e0e0e0;
 }
 
 body {
@@ -125,6 +127,7 @@ body {
     display: block;
     border-top-left-radius: 16px;
     border-top-right-radius: 16px;
+    background-color: var(--skeleton-color-light); /* Placeholder background */
 }
 
 .news-card-content {
@@ -182,6 +185,15 @@ body {
     100% { transform: rotate(360deg); }
 }
 
+.small-spinner {
+    border: 2px solid var(--medium-gray);
+    border-top: 2px solid var(--accent-blue);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+}
+
 /* Message for no news found */
 .news-feed-container p {
     text-align: center;
@@ -189,6 +201,78 @@ body {
     padding: 40px;
     font-size: 1.1em;
 }
+
+/* --- Skeleton Loading Styles --- */
+#skeletonContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 30px; /* Matches news-card margin-bottom */
+    padding-top: 30px; /* Matches news-feed-container margin-top */
+    padding-bottom: 60px; /* Matches news-feed-container padding-bottom */
+}
+
+.skeleton-card {
+    background-color: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px var(--shadow-light);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative; /* Needed for animation */
+    height: 450px; /* Approximate height of a news card */
+}
+
+.skeleton-image {
+    width: 100%;
+    height: 240px;
+    background-color: var(--skeleton-color-light);
+}
+
+.skeleton-content {
+    padding: 25px;
+}
+
+.skeleton-line {
+    height: 1em;
+    background-color: var(--skeleton-color-light);
+    margin-bottom: 0.8em;
+    border-radius: 4px;
+}
+
+.skeleton-line.short {
+    width: 60%;
+}
+
+.skeleton-line.medium {
+    width: 80%;
+}
+
+.skeleton-line.long {
+    width: 100%;
+}
+
+/* Animation for skeleton loader */
+.skeleton-animation::before {
+    content: '';
+    display: block;
+    position: absolute;
+    left: -150%;
+    top: 0;
+    height: 100%;
+    width: 50%;
+    background: linear-gradient(to right, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+    animation: loading-shine 1.5s infinite;
+}
+
+@keyframes loading-shine {
+    from {
+        left: -150%;
+    }
+    to {
+        left: 100%;
+    }
+}
+
 
 /* --- Article Detail View Styles --- */
 .article-detail-overlay {
@@ -214,6 +298,19 @@ body {
     visibility: visible;
     transform: translateY(0); /* Slide in from bottom */
 }
+
+/* Reading Progress Bar */
+.reading-progress-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 0%;
+    background-color: var(--accent-blue);
+    z-index: 2001; /* Above header */
+    transition: width 0.1s linear; /* Smooth fill */
+}
+
 
 .article-detail-header {
     display: flex;
@@ -269,6 +366,7 @@ body {
     border-radius: 8px; /* Slightly rounded corners */
     margin-bottom: 15px;
     display: block;
+    background-color: var(--skeleton-color-light); /* Placeholder background */
 }
 
 .article-image-attribution {
@@ -327,6 +425,9 @@ body {
     padding: 15px 20px;
     border-top: 1px solid var(--medium-gray);
     box-shadow: 0 -2px 5px var(--shadow-light);
+    display: flex;
+    flex-direction: column; /* Stack ask input and response area */
+    gap: 15px; /* Space between them */
 }
 
 .ask-follow-up {
@@ -338,6 +439,7 @@ body {
     border-radius: 25px;
     padding: 8px 15px;
     align-items: center;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.08); /* Inner shadow for input */
 }
 
 .ask-input {
@@ -365,6 +467,71 @@ body {
 }
 .microphone-btn:hover {
     color: #3f6ca4;
+}
+
+/* AI Response Area */
+.ai-response-area {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: var(--light-gray);
+    border-radius: 12px;
+    padding: 15px;
+    font-size: 0.95em;
+    color: var(--primary-text);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.08); /* Inner shadow */
+    display: none; /* Hidden by default */
+    display: flex; /* Flex for content/spinner centering */
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: all 0.3s ease-out; /* Smooth fade-in for response */
+    min-height: 50px; /* Default min height for content */
+}
+
+.ai-response-area.active {
+    display: flex; /* Show when active */
+}
+
+/* Specific styling for loading state within AI response area */
+.ai-response-area.loading-state {
+    padding: 20px; /* Adjust padding for loading state to be more compact */
+    min-height: unset; /* Remove min-height for loading state */
+    /* You might remove box-shadow: inset here too if desired for a cleaner look */
+}
+
+.ai-response-loading {
+    display: none; /* Hidden by default */
+    align-items: center;
+    gap: 10px;
+    color: var(--secondary-text);
+    font-weight: 500;
+}
+.ai-response-loading.active {
+    display: flex;
+}
+.ai-response-content {
+    display: none; /* Hidden by default */
+}
+.ai-response-content.active {
+    display: block;
+}
+
+/* Markdown styling within AI response */
+.ai-response-area p {
+    margin: 0; /* Remove default paragraph margins */
+    text-align: left; /* Ensure text alignment is natural */
+}
+.ai-response-area strong {
+    font-weight: 700;
+}
+.ai-response-area ul {
+    text-align: left;
+    padding-left: 20px;
+    margin-top: 10px;
+    margin-bottom: 0;
+}
+.ai-response-area li {
+    margin-bottom: 5px;
 }
 
 
@@ -401,6 +568,13 @@ body {
     }
     .ask-input {
         font-size: 0.9em;
+    }
+    .ai-response-area {
+        padding: 12px;
+        font-size: 0.9em;
+    }
+    .ai-response-area.loading-state {
+        padding: 15px;
     }
 }
 
@@ -439,5 +613,12 @@ body {
     }
     .ask-input {
         font-size: 0.85em;
+    }
+    .ai-response-area {
+        padding: 10px;
+        font-size: 0.85em;
+    }
+    .ai-response-area.loading-state {
+        padding: 10px;
     }
 }

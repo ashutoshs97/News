@@ -28,8 +28,8 @@ const GNEWS_BASE_URL = 'https://gnews.io/api/v4/top-headlines';
 const GEMINI_API_KEY = 'AIzaSyA0SRTKK-PcppC7u8B7VUKlqOnjY21bxQE';
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
-// *** FIX: Updated to 'gemini-2.0-flash' as indicated by the user ***
-const geminiModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash" }); // <--- CHANGED THIS LINE
+// Updated model to 'gemini-2.0-flash'
+const geminiModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 
 // Endpoint to get latest headlines (proxies GNews API)
@@ -70,7 +70,6 @@ app.get('/api/generate-article', async (req, res) => {
     try {
         const result = await geminiModel.generateContent({
             contents: [{ parts: [{ text: prompt }] }],
-            // Add safety settings if you need to adjust default blocking behavior
             safetySettings: [
                 { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
                 { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
@@ -87,6 +86,49 @@ app.get('/api/generate-article', async (req, res) => {
     } catch (error) {
         console.error('Backend: Error calling Gemini Pro API:', error.message);
         res.status(500).json({ error: 'Failed to generate article content with AI.', details: error.message });
+    }
+});
+
+// *** UPDATED ENDPOINT: Handle Follow-up Questions with Gemini Pro (Web-enabled) ***
+app.get('/api/ask-gemini', async (req, res) => {
+    const { question, context } = req.query; // Context is still passed, but prompt won't strictly use it
+
+    if (!question) {
+        return res.status(400).json({ error: 'Question is required.' });
+    }
+
+    console.log("Backend: Answering question with Gemini Pro (web-enabled):", question.substring(0, 50) + "...");
+
+    // Prompt now encourages using general knowledge, not just the provided article context.
+    // The 'context' parameter from frontend is still passed but used as general background rather than strict constraint.
+    const prompt = `Answer the following question. Use your general knowledge to provide a comprehensive and helpful response. If the question is ambiguous, provide a balanced answer.
+
+    Question: "${question}"
+
+    (Context related to the current news article, if helpful: ${context.substring(0, 500)}...)
+
+    Answer:
+    `;
+
+    try {
+        const result = await geminiModel.generateContent({
+            contents: [{ parts: [{ text: prompt }] }],
+            safetySettings: [
+                { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+                { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+                { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+                { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+            ],
+        });
+        const response = await result.response;
+        const answerText = response.text();
+
+        console.log("Backend: Gemini Pro answered:", answerText.substring(0, 50) + "...");
+        res.json({ answer: answerText });
+
+    } catch (error) {
+        console.error('Backend: Error calling Gemini Pro for Q&A:', error.message);
+        res.status(500).json({ error: 'Failed to get AI answer.', details: error.message });
     }
 });
 

@@ -15,6 +15,7 @@
         </div>
 
         <div class="news-feed-container" id="newsFeedContainer">
+            <div id="skeletonContainer"></div>
             <div class="loading-indicator" id="loadingIndicator">
                 <div class="spinner"></div>
                 <span>Loading news...</span>
@@ -23,6 +24,7 @@
     </div>
 
     <div class="article-detail-overlay" id="articleDetailOverlay">
+        <div class="reading-progress-bar" id="readingProgressBar"></div>
         <div class="article-detail-header">
             <button class="close-btn" id="closeArticleDetailBtn"><i class="fas fa-times"></i></button>
             <div class="header-icons">
@@ -32,8 +34,8 @@
                 <a href="#" class="header-icon"><i class="fas fa-ellipsis-v"></i></a>
             </div>
         </div>
-        <div class="article-detail-content-wrapper">
-            <img src="" alt="Article Image" class="article-detail-image" id="detailArticleImage">
+        <div class="article-detail-content-wrapper" id="detailContentWrapper">
+            <img src="" alt="Article Image" class="article-detail-image" id="detailArticleImage" loading="lazy">
             <div class="article-image-attribution" id="detailImageAttribution"></div>
             <h1 class="article-detail-title" id="detailArticleTitle"></h1>
             <p class="article-detail-source" id="detailArticleSource"></p>
@@ -42,8 +44,14 @@
         </div>
         <div class="article-detail-footer">
             <div class="ask-follow-up">
-                <input type="text" placeholder="Ask follow-up..." class="ask-input">
-                <button class="microphone-btn"><i class="fas fa-microphone"></i></button>
+                <input type="text" placeholder="Ask follow-up..." class="ask-input" id="askFollowUpInput">
+                <button class="microphone-btn" id="askFollowUpBtn"><i class="fas fa-paper-plane"></i></button>
+            </div>
+            <div class="ai-response-area" id="aiResponseArea">
+                <div class="ai-response-loading" id="aiResponseLoading">
+                    <div class="small-spinner"></div>
+                    <span>Thinking...</span>
+                </div>
             </div>
         </div>
     </div>
