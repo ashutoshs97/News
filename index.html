@@ -6,16 +6,45 @@
     <title>Global Top Headlines</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <div class="header">
-        <h1>Global Top Headlines</h1>
+    <div class="main-app-container">
+        <div class="header">
+            <h1>Global Top Headlines</h1>
+        </div>
+
+        <div class="news-feed-container" id="newsFeedContainer">
+            <div class="loading-indicator" id="loadingIndicator">
+                <div class="spinner"></div>
+                <span>Loading news...</span>
+            </div>
+        </div>
     </div>
 
-    <div class="news-feed-container" id="newsFeedContainer">
-        <div class="loading-indicator" id="loadingIndicator">
-            <div class="spinner"></div>
-            <span>Loading news...</span>
+    <div class="article-detail-overlay" id="articleDetailOverlay">
+        <div class="article-detail-header">
+            <button class="close-btn" id="closeArticleDetailBtn"><i class="fas fa-times"></i></button>
+            <div class="header-icons">
+                <a href="#" class="header-icon"><i class="fas fa-bookmark"></i></a>
+                <a href="#" class="header-icon"><i class="fas fa-headphones"></i></a>
+                <a href="#" class="header-icon"><i class="fas fa-share-alt"></i></a>
+                <a href="#" class="header-icon"><i class="fas fa-ellipsis-v"></i></a>
+            </div>
+        </div>
+        <div class="article-detail-content-wrapper">
+            <img src="" alt="Article Image" class="article-detail-image" id="detailArticleImage">
+            <div class="article-image-attribution" id="detailImageAttribution"></div>
+            <h1 class="article-detail-title" id="detailArticleTitle"></h1>
+            <p class="article-detail-source" id="detailArticleSource"></p>
+            <div class="article-detail-body" id="detailArticleBody"></div>
+            <a href="#" class="read-more-link" id="detailReadMoreLink" target="_blank">Read Full Article at Source</a>
+        </div>
+        <div class="article-detail-footer">
+            <div class="ask-follow-up">
+                <input type="text" placeholder="Ask follow-up..." class="ask-input">
+                <button class="microphone-btn"><i class="fas fa-microphone"></i></button>
+            </div>
         </div>
     </div>
 
